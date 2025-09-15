@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index3 - CloudTube API Example</title>
+</head>
+<body>
+    <h1>Index3 (CloudTube API Example)</h1>
+    <form id="searchForm">
+        <input type="text" id="searchQuery" placeholder="Search YouTube...">
+        <button type="submit">Search</button>
+    </form>
+    <div id="results"></div>
+    <script>
+        const CLOUDTUBE_API = 'https://api.cloudtube.dev';
+        document.getElementById('searchForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const query = document.getElementById('searchQuery').value;
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = 'Searching...';
+            try {
+                const res = await fetch(`${CLOUDTUBE_API}/search?q=${encodeURIComponent(query)}`);
+                const data = await res.json();
+                if (Array.isArray(data) && data.length > 0) {
+                    resultsDiv.innerHTML = data.map(video => `
+                        <div>
+                            <a href="wach3.html?id=${video.id}">${video.title}</a>
+                        </div>
+                    `).join('');
+                } else {
+                    resultsDiv.innerHTML = 'No results found.';
+                }
+            } catch (err) {
+                resultsDiv.innerHTML = 'Error fetching results.';
+            }
+        });
+    </script>
+</body>
+</html>

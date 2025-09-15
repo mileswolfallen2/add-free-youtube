@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wach3 - CloudTube API Example</title>
+</head>
+<body>
+    <h1>Wach3 (CloudTube API Example)</h1>
+    <div id="video"></div>
+    <script>
+        const CLOUDTUBE_API = 'https://api.cloudtube.dev';
+        // Get video ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const videoId = urlParams.get('id');
+        const videoDiv = document.getElementById('video');
+        if (!videoId) {
+            videoDiv.innerHTML = 'No video ID provided.';
+        } else {
+            fetch(`${CLOUDTUBE_API}/video?id=${videoId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.title && data.url) {
+                        videoDiv.innerHTML = `
+                            <h2>${data.title}</h2>
+                            <video width="640" controls src="${data.url}"></video>
+                            <p>${data.description || ''}</p>
+                        `;
+                    } else {
+                        videoDiv.innerHTML = 'Video not found.';
+                    }
+                })
+                .catch(() => {
+                    videoDiv.innerHTML = 'Error loading video.';
+                });
+        }
+    </script>
+</body>
+</html>
