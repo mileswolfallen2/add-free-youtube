@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wach2 - FreeTube API Example</title>
+</head>
+<body>
+    <h1>Wach2 (FreeTube API Example)</h1>
+    <div id="video"></div>
+    <script>
+        // Get video ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const videoId = urlParams.get('id');
+        const videoDiv = document.getElementById('video');
+        if (!videoId) {
+            videoDiv.innerHTML = 'No video ID provided.';
+        } else {
+            // Example FreeTube API endpoint (replace with actual endpoint if needed)
+            const apiUrl = `https://api.freetubeapp.io/api/v1/videos/${videoId}`;
+            fetch(apiUrl)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.id) {
+                        videoDiv.innerHTML = `
+                            <h2>${data.title}</h2>
+                            <video width="640" controls src="${data.url}"></video>
+                            <p>${data.description || ''}</p>
+                        `;
+                    } else {
+                        videoDiv.innerHTML = 'Video not found.';
+                    }
+                })
+                .catch(() => {
+                    videoDiv.innerHTML = 'Error loading video.';
+                });
+        }
+    </script>
+</body>
+</html>
