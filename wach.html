@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Piped YouTube Watch</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    .video-title { font-size: 1.5em; font-weight: bold; margin-bottom: 0.5em; }
+    .video-meta { color: #555; margin-bottom: 1em; }
+    video { width: 100%; max-width: 800px; margin-bottom: 1em; }
+  </style>
+</head>
+<body>
+  <a href="index.html">&larr; Back to search</a>
+  <div id="video-container">Loading...</div>
+
+  <script>
+    function getQueryParam(name) {
+      const url = new URL(window.location.href);
+      return url.searchParams.get(name);
+    }
+
+    async function loadVideo() {
+      const videoId = getQueryParam('v');
+      if (!videoId) {
+        document.getElementById('video-container').textContent = 'No video specified.';
+        return;
+      }
+      // Get video info from Piped API
+      const res = await fetch(`https://pipedapi.kavin.rocks/streams/${encodeURIComponent(videoId)}`);
+      if (!res.ok) {
+        document.getElementById('video-container').textContent = 'Video not found.';
+        return;
+      }
+      const data = await res.json();
+      // Find a playable stream (prefer mp4, fallback to any)
+      let stream = data.videoStreams.find(s => s.mimeType.includes('mp4')) || data.videoStreams[0];
+      if (!stream) {
+        document.getElementById('video-container').textContent = 'No playable stream found.';
+        return;
+      }
+      document.getElementById('video-container').innerHTML = `
+        <div class="video-title">${data.title}</div>
+        <div class="video-meta">${data.uploader} • ${data.duration}</div>
+        <video controls poster="${data.thumbnailUrl}">
+          <source src="${stream.url}" type="${stream.mimeType}">
+          Your browser does not support the video tag.
+        </video>
+        <div>${data.description ? data.description.replace(/\n/g, "<br>") : ""}</div>
+      `;
+    }
+
+    loadVideo();
+  </script>
+</body>
+</html>
