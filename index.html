@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Piped YouTube Search</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    input, button { font-size: 1rem; padding: 0.3em; }
+    .video-list { margin-top: 2em; }
+    .video-item { display: flex; align-items: center; margin-bottom: 1em; }
+    .video-item img { width: 160px; height: 90px; object-fit: cover; margin-right: 1em; }
+    .video-title { font-weight: bold; font-size: 1.1em; }
+    .video-uploader { color: #444; }
+  </style>
+</head>
+<body>
+  <h1>Piped YouTube Search</h1>
+  <form id="search-form">
+    <input id="search-input" type="text" placeholder="Search for videos..." required>
+    <button type="submit">Search</button>
+  </form>
+  <div class="video-list" id="results"></div>
+
+  <script>
+    const form = document.getElementById('search-form');
+    const input = document.getElementById('search-input');
+    const resultsDiv = document.getElementById('results');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const query = input.value.trim();
+      if (!query) return;
+      resultsDiv.innerHTML = 'Loading...';
+      const res = await fetch(`https://pipedapi.kavin.rocks/search?q=${encodeURIComponent(query)}`);
+      const data = await res.json();
+      resultsDiv.innerHTML = '';
+      if (!data.items || !data.items.length) {
+        resultsDiv.textContent = 'No results found.';
+        return;
+      }
+      data.items.forEach(item => {
+        if(item.type !== "video") return;
+        const div = document.createElement('div');
+        div.className = 'video-item';
+        div.innerHTML = `
+          <a href="wach.html?v=${encodeURIComponent(item.id)}">
+            <img src="${item.thumbnail}" alt="Thumbnail">
+          </a>
+          <div>
+            <a class="video-title" href="wach.html?v=${encodeURIComponent(item.id)}">${item.title}</a>
+            <div class="video-uploader">${item.uploaderName}</div>
+            <div>${item.duration}</div>
+          </div>
+        `;
+        resultsDiv.appendChild(div);
+      });
+    });
+  </script>
+</body>
+</html>
