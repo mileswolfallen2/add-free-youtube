@@ -1,6 +1,6 @@
-# Add-Free YouTube (FreeTube API Example)
+# Add-Free YouTube
 
-This project demonstrates how to use the FreeTube API to search and watch YouTube videos without ads or tracking, using simple HTML pages.
+This project demonstrates how to use the youtube apis to search and watch YouTube videos without ads or tracking, using simple HTML pages.
 
 ## Files
 
